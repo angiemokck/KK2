@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>课堂翻牌特权游戏</title>
+
+<style>
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f5f5f5;
+    text-align: center;
+  }
+
+  h2 {
+    margin: 16px 0;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    padding: 10px;
+    max-width: 600px;
+    margin: auto;
+  }
+
+  @media (min-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+
+  .card {
+    background: white;
+    border-radius: 12px;
+    height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform 0.15s;
+    user-select: none;
+  }
+
+  .card:active {
+    transform: scale(0.95);
+  }
+
+  .emoji {
+    font-size: 28px;
+  }
+
+  .text {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  /* 烟花 */
+  .spark {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    z-index: 9999;
+    animation: fade 0.8s linear forwards;
+  }
+
+  @keyframes fade {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(2); }
+  }
+</style>
+</head>
+
+<body>
+
+<h2>🎲 课堂翻牌游戏</h2>
+<p>完成课业的勇士，选择一张牌翻开！</p>
+<div class="grid" id="grid"></div>
+
+<audio id="sound" src="https://www.soundjay.com/buttons/sounds/button-3.mp3"></audio>
+
+<script>
+const cards = [
+  { text:"上厕所🚽 特权", img:"https://cdn-icons-png.flaticon.com/512/2203/2203644.png", weight:1 },
+  { text:"两粒🍬🍬糖果", img:"https://cdn-icons-png.flaticon.com/512/1175/1175799.png", weight:2 },
+  { text:"一粒🍬糖果", img:"https://cdn-icons-png.flaticon.com/512/1888/1888900.png", weight:3 },
+  { text:"免费可乐🥤", img:"https://cdn-icons-png.flaticon.com/512/2405/2405479.png", weight:2 },
+  { text:"王牌🃏", img:"https://cdn-icons-png.flaticon.com/512/6041/6041091.png", weight:1 },
+  { text:"加5分⭐", img:"https://cdn-icons-png.flaticon.com/512/1828/1828884.png", weight:3 },
+  { text:"棒棒糖🍭一支", img:"https://cdn-icons-png.flaticon.com/512/1081/1081898.png", weight:2 },
+  { text:"🎵点歌权", img:"https://cdn-icons-png.flaticon.com/512/727/727218.png", weight:2 },
+  { text:"一包零食", img:"https://cdn-icons-png.flaticon.com/512/859/859293.png", weight:2 },
+  { text:"神秘奖励🎁", img:"https://cdn-icons-png.flaticon.com/256/12516/12516571.png", weight:1 }
+];
+
+const grid = document.getElementById("grid");
+const sound = document.getElementById("sound");
+
+let flipped = Array(10).fill(false);
+
+function createCards() {
+  cards.forEach((c, i) => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `<div class="emoji">🎴</div>`;
+
+    div.onclick = () => flip(i, div);
+
+    grid.appendChild(div);
+  });
+}
+
+function flip(i, el) {
+  if (flipped[i]) return;
+  flipped[i] = true;
+
+  const card = cards[i];
+
+  el.innerHTML = `
+    <div class="emoji">${card.img}</div>
+    <div class="text">${card.text}</div>
+  `;
+
+  if (card.text === "神秘奖励🎁") {
+    fireworks();
+    sound.play();
+  }
+}
+
+function fireworks() {
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement("div");
+    s.className = "spark";
+    s.style.left = Math.random() * window.innerWidth + "px";
+    s.style.top = Math.random() * window.innerHeight + "px";
+    s.style.background = `hsl(${Math.random()*360},100%,60%)`;
+    document.body.appendChild(s);
+
+    setTimeout(() => s.remove(), 800);
+  }
+}
+
+createCards();
+</script>
+
+</body>
+</html>
