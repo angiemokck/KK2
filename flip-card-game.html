@@ -1,39 +1,25 @@
 <!DOCTYPE html>
-
 <html lang="zh">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>课堂翻牌游戏</title>
 
 <style>
 
 body {
-
   font-family: Arial;
-
   text-align: center;
-
   background:#f5f7fb;
-
 }
 
 h1 { margin-top:20px; }
 
 .grid {
-
   display:grid;
-
   grid-template-columns: repeat(2, 120px);
-
   gap:15px;
-
   justify-content:center;
-
   margin-top:30px;
 
 }
@@ -41,295 +27,187 @@ h1 { margin-top:20px; }
 /* 📱 手机2列 / 💻 电脑5列 */
 
 @media (min-width: 768px) {
-
   .grid {
-
     grid-template-columns: repeat(5, 120px);
-
   }
-
 }
 
 /* 卡片 */
 
 .card {
-
   width:120px; 
-
   height:160px;
-
   perspective:1000px;
-
   cursor:pointer;
-
 }
 
 .card-inner {
-
   position:relative;
-
   width:100%; 
-
   height:100%;
-
   transition: transform 0.6s;
-
   transform-style: preserve-3d;
-
 }
 
 .card.flipped .card-inner {
-
   transform: rotateY(180deg);
-
 }
 
 .card-front, .card-back {
-
   position:absolute;
-
   width:100%; 
-
   height:100%;
-
   backface-visibility: hidden;
-
   border-radius:12px;
-
   display:flex;
-
   flex-direction:column;
-
   align-items:center;
-
   justify-content:center;
-
-  font-size:18px;
-
-  padding:5px;
-
+  font-size:14px;
+  padding:0px;
 }
 
 .card-front {
-
   background:#4a90e2;
-
   color:white;
-
 }
 
 .card-back {
-
   background:#2ecc71;
-
   color:white;
-
   transform: rotateY(180deg);
-
 }
 
 .card img {
-
   width:60px;
-
   height:60px;
-
   margin-bottom:5px;
-
 }
 
 button {
-
   margin-top:20px;
-
   padding:10px 20px;
-
   font-size:16px;
-
 }
 
 /* 🎆 烟花 */
 
 .spark {
-
   position:fixed;
-
   width:6px;
-
   height:6px;
-
   border-radius:50%;
-
   z-index:9999;
-
   animation: fade 0.8s linear forwards;
-
 }
 
 @keyframes fade {
-
   0% {opacity:1; transform:scale(1);}
-
   100% {opacity:0; transform:scale(1);}
-
 }
 
 </style>
-
 </head>
-
 <body>
 
 <h1>🎲 课堂翻牌特权游戏</h1>
 
 <p>完成课业的勇士，请选择一张卡牌！</p>
-
 <div class="grid" id="grid"></div>
-
 <button onclick="resetGame()">重置游戏</button>
 
 <audio id="sound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
+<audio id="soundclaps" src="https://cdn.pixabay.com/audio/2022/03/15/audio_d82921d2f0.mp3"></audio>
 
 <script>
 
 const rewards = [
-
   { text:"上厕所🚽 特权", img:"https://cdn-icons-png.flaticon.com/512/2203/2203644.png" },
-
   { text:"两粒🍬🍬糖果", img:"https://cdn-icons-png.flaticon.com/512/1175/1175799.png" },
-
   { text:"一粒🍬糖果", img:"https://cdn-icons-png.flaticon.com/512/1888/1888900.png" },
-
   { text:"免费可乐🥤", img:"https://cdn-icons-png.flaticon.com/512/2405/2405479.png" },
-
   { text:"王牌🃏", img:"https://cdn-icons-png.flaticon.com/512/6041/6041091.png" },
-
   { text:"加5分⭐", img:"https://cdn-icons-png.flaticon.com/512/1828/1828884.png" },
-
   { text:"棒棒糖🍭一支", img:"https://cdn-icons-png.flaticon.com/512/1081/1081898.png" },
-
   { text:"🎵点歌权", img:"https://cdn-icons-png.flaticon.com/512/727/727218.png" },
-
   { text:"一包零食", img:"https://cdn-icons-png.flaticon.com/512/859/859293.png" },
-
   { text:"神秘奖励🎁", img:"https://cdn-icons-png.flaticon.com/256/12516/12516571.png" }
-
 ];
 
 let shuffled = [];
 
 const grid = document.getElementById("grid");
-
 const sound = document.getElementById("sound");
 
 function shuffle(array) {
-
   return array.sort(() => Math.random() - 0.5);
-
 }
 
 function fireworks() {
-
   for (let i = 0; i < 40; i++) {
-
     const s = document.createElement("div");
-
     s.className = "spark";
-
     s.style.left = Math.random() * window.innerWidth + "px";
-
     s.style.top = Math.random() * window.innerHeight + "px";
-
     s.style.background = `hsl(${Math.random()*360},100%,60%)`;
-
     document.body.appendChild(s);
-
     setTimeout(() => s.remove(), 800);
-
   }
-
 }
 
 function createCards() {
-
   grid.innerHTML = "";
-
   shuffled.forEach((reward, index) => {
 
     const card = document.createElement("div");
-
     card.className = "card";
-
+    
     const inner = document.createElement("div");
-
     inner.className = "card-inner";
-
+    
     const front = document.createElement("div");
-
     front.className = "card-front";
-
     front.innerText = "卡牌 " + (index + 1);
-
+    
     const back = document.createElement("div");
-
     back.className = "card-back";
-
+    
     const img = document.createElement("img");
-
     img.src = reward.img;
-
+    
     const text = document.createElement("div");
-
     text.innerText = reward.text;
 
     back.appendChild(img);
-
     back.appendChild(text);
-
     inner.appendChild(front);
-
     inner.appendChild(back);
-
     card.appendChild(inner);
 
     card.onclick = () => flipCard(card, reward);
-
     grid.appendChild(card);
-
   });
-
 }
 
 function flipCard(card, reward) {
-
   if (card.classList.contains("flipped")) return;
-
   card.classList.add("flipped");
-
   sound.play();
 
   // 🎁 神秘奖励触发
-
   if (reward.text.includes("神秘奖励")) {
-
     fireworks();
-
+    soundclaps.play();
   }
-
 }
 
 function resetGame() {
-
   shuffled = shuffle([...rewards]);
-
   createCards();
-
 }
 
 resetGame();
 
 </script>
-
 </body>
-
 </html>
